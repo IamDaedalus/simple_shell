@@ -37,7 +37,7 @@ void extract_args(char *line, char *args[], int max_args)
 	 * Split the line into tokens based on spaces
 	 * tabs, and newline characters
 	 */
-	token = strtok(line, " \t\n"); 
+	token = strtok(line, " \t\n");
 
 	while (token != NULL && i < max_args - 1)
 	{
