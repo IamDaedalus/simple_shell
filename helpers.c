@@ -6,7 +6,7 @@
  * print - simple function that prints only text fed to it
  * @msg: the message to print
  */
-void print(char *msg)
+void print(const char *msg)
 {
 	int i = 0;
 
@@ -50,4 +50,27 @@ void extract_args(char *line, char *args[], int max_args)
 	 * NULL to mark the end of arguments
 	 */
 	args[i] = NULL;
+}
+
+/**
+ * _getenv - extracts the PATH variable from envp
+ * @env: the environment variables
+ * Return: returns PATH or NULL if not found
+ */
+char *_getenv(char **env, char *var)
+{
+	int i = 0;
+
+	if (!env)
+		return (NULL);
+
+	while (env[i])
+	{
+		if (strncmp(env[i], var, 4) == 0)
+			return env[i];
+
+		i++;
+	}
+
+	return (NULL);
 }

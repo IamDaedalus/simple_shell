@@ -6,10 +6,13 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-extern char **environ;
 
 /**
  * init_shell - starting point for the shell
+ * @argv: the arg vectors from main
+ * @envp: the env variablea from main
+ * Return: returns -1 for failure or 0 for success
+ * which is then passed to main function
  */
 int init_shell(char **argv, char **envp)
 {
@@ -67,11 +70,11 @@ void clear_residuals(char **line, size_t *line_size)
  * core_logic - handles the executions of programs
  * @child: the child pid that was forked
  * @args: the args the user specified
- * @environ: the env variable
+ * @envp: the env variable
  * Return: returns 0 for success or -1 otherwise
  * and is passed to init_shell which in turn passes to main
  */
-int core_logic(pid_t child, char *args[], char **argv, char **environ)
+int core_logic(pid_t child, char *args[], char **argv, char **envp)
 {
 	int ret_val = 0, status;
 
@@ -82,7 +85,7 @@ int core_logic(pid_t child, char *args[], char **argv, char **environ)
 	}
 	else if (child == 0)
 	{
-		if ((execve(args[0], args, environ)) == -1)
+		if ((execve(args[0], args, envp)) == -1)
 		{
 			perror(argv[0]);
 			return (-1);
@@ -94,4 +97,28 @@ int core_logic(pid_t child, char *args[], char **argv, char **environ)
 	}
 
 	return (ret_val);
+}
+
+int run_command(char *args[], char **envp)
+{
+	char *paths[64];
+	char *path = strdup(_getenv("PATH"));
+	char *tok = NULL;
+	int i = 0;
+
+	tok = strtok(path, "=");
+	while (tok)
+	{
+		tok = strtok(NULL, ":");
+		if (tok)
+			paths[i] = tok;
+
+		i++;
+	}
+
+	if ((execve(args[0], args, envp)) == -1)
+	{
+		perror(argv[0]);
+		return (-1);
+	}
 }
