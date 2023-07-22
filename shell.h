@@ -12,5 +12,6 @@ int init_shell(char **argv, char **envp);
 int core_logic(pid_t child, char *args[], char **argv, char **environ);
 void clear_residuals(char **line, size_t *line_size);
 char *_getenv(char **envp, char *var);
+int run_command(char *args[], char **envp);
 
 #endif /* SHELL_H */

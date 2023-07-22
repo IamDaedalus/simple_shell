@@ -1,5 +1,6 @@
 #include "shell.h"
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -27,8 +28,10 @@ int init_shell(char **argv, char **envp)
 		print(PROMPT);
 		fflush(stdout);
 
+		/* handle empty lines and ctrl d */
 		if ((getline(&line, &line_size, stdin)) == -1)
 		{
+			printf("init shell getline");
 			break;
 		}
 
@@ -41,6 +44,7 @@ int init_shell(char **argv, char **envp)
 		if ((core_logic(kid_proc, args, argv, envp)) == -1)
 		{
 			/* break as soon as something fails in core_logic */
+			printf("core logic");
 			break;
 		}
 
@@ -85,7 +89,7 @@ int core_logic(pid_t child, char *args[], char **argv, char **envp)
 	}
 	else if (child == 0)
 	{
-		if ((execve(args[0], args, envp)) == -1)
+		if ((run_command(args, envp)) == -1)
 		{
 			perror(argv[0]);
 			return (-1);
@@ -102,23 +106,52 @@ int core_logic(pid_t child, char *args[], char **argv, char **envp)
 int run_command(char *args[], char **envp)
 {
 	char *paths[64];
-	char *path = strdup(_getenv("PATH"));
+	char *path = strdup(_getenv(envp, "PATH"));
 	char *tok = NULL;
-	int i = 0;
-
-	tok = strtok(path, "=");
-	while (tok)
+	int i = 0, j = 0;
+	
+	/* check if the command begins with a / */
+	if (strchr(args[0], '/'))
 	{
-		tok = strtok(NULL, ":");
-		if (tok)
+		if (execve(args[0], args, envp) == -1)
+		{
+			return (-1);
+		}
+	}
+	else
+	{
+		tok = strtok(path, "=");
+		while (tok)
+		{
+			tok = strtok(NULL, ":");
 			paths[i] = tok;
+			i++;
+		}
 
-		i++;
+		/* Null-terminate the paths array */
+		paths[i] = NULL;
+
+		/* Search for the binary in each directory path */
+		while (path[j])
+		{
+			char *full_path = malloc(strlen(paths[j]) + strlen(args[0]) + 2);
+			if (full_path == NULL)
+			{
+				perror(args[0]);
+				return (-1);
+			}
+			strcpy(full_path, paths[j]);
+			strcat(full_path, "/");
+			strcat(full_path, args[0]);
+
+			if (execve(full_path, args, envp) == -1)
+			{
+				free(full_path);
+				j++;
+			}
+		}
 	}
 
-	if ((execve(args[0], args, envp)) == -1)
-	{
-		perror(argv[0]);
-		return (-1);
-	}
+
+	return (-1);
 }
