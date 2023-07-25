@@ -1,6 +1,7 @@
 #include "shell.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
  * print - simple function that prints only text fed to it
@@ -67,9 +68,61 @@ char *_getenv(char **env, char *var)
 	while (env[i])
 	{
 		if (strncmp(env[i], var, 4) == 0)
-			return env[i];
+			return (env[i]);
 
 		i++;
+	}
+
+	return (NULL);
+}
+
+/**
+ * get_cnd_path - checks and returns the full path to the command
+ * if found
+ * @args: the user's args from the shell
+ * @envp: local environment variable
+ * Return: returns the fullpath of the command or NULL if not found
+ */
+char *get_cmd_path(char *args[], char **envp)
+{
+	int i = 0, j = 0;
+	char *path_entries[MAX_PATH_COUNT];
+	char *full_path = NULL;
+	char *tok = NULL;
+	char *path = _getenv(envp, "PATH");
+
+	if (strchr(args[0], '/'))
+		return (args[0]);
+
+	if (path == NULL)
+	{
+		return (NULL);
+	}
+
+	tok = strtok(path, "=");
+	while (tok != NULL && i < MAX_PATH_COUNT)
+	{
+		path_entries[i] = tok;
+		i++;
+		tok = strtok(NULL, ":");
+	}
+	path_entries[i] = NULL;
+
+	/* iterate through each entry looking for the command */
+	for (j = 0; path_entries[j] != NULL; j++)
+	{
+		full_path = malloc(strlen(path_entries[j]) + strlen(args[0]) + 2);
+		if (full_path == NULL)
+			return (NULL);
+
+		strcpy(full_path, path_entries[j]);
+		strcat(full_path, "/");
+		strcat(full_path, args[0]);
+
+		if (access(full_path, F_OK) == 0)
+			return (full_path);
+
+		free(full_path);
 	}
 
 	return (NULL);

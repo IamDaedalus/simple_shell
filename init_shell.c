@@ -19,7 +19,7 @@ int init_shell(char **argv, char **envp)
 {
 	pid_t kid_proc;
 	int ret_val = 0;
-	char *line = NULL;
+	char *line = NULL, *cmd_path = NULL;
 	size_t line_size = 0;
 	char *args[30];
 
@@ -31,7 +31,6 @@ int init_shell(char **argv, char **envp)
 		/* handle empty lines and ctrl d */
 		if ((getline(&line, &line_size, stdin)) == -1)
 		{
-			printf("init shell getline");
 			break;
 		}
 
@@ -39,13 +38,20 @@ int init_shell(char **argv, char **envp)
 			continue;
 
 		extract_args(line, args, 30);
-
-		kid_proc = fork();
-		if ((core_logic(kid_proc, args, argv, envp)) == -1)
+		cmd_path = get_cmd_path(args, envp);
+		if (cmd_path == NULL)
 		{
-			/* break as soon as something fails in core_logic */
-			printf("core logic");
-			break;
+			perror(argv[0]);
+		}
+		else
+		{
+			args[0] = cmd_path;
+			kid_proc = fork();
+			if ((core_logic(kid_proc, args, argv, envp)) == -1)
+			{
+				/* break as soon as something fails in core_logic */
+				break;
+			}
 		}
 
 		clear_residuals(&line, &line_size);
@@ -74,6 +80,7 @@ void clear_residuals(char **line, size_t *line_size)
  * core_logic - handles the executions of programs
  * @child: the child pid that was forked
  * @args: the args the user specified
+ * @argv: we need this for accessing the binary name
  * @envp: the env variable
  * Return: returns 0 for success or -1 otherwise
  * and is passed to init_shell which in turn passes to main
@@ -84,6 +91,7 @@ int core_logic(pid_t child, char *args[], char **argv, char **envp)
 
 	if (child < 0)
 	{
+		/* print the name of the binary and an error */
 		perror(argv[0]);
 		return (-1);
 	}
@@ -103,20 +111,42 @@ int core_logic(pid_t child, char *args[], char **argv, char **envp)
 	return (ret_val);
 }
 
+/**
+ * run_command - execve wrapper
+ * @args: the extracted args from the prompt
+ * @envp: the environment vars from main()
+ * Return: returns 0 for success or -1 for failure
+ */
 int run_command(char *args[], char **envp)
 {
-	char *paths[64];
+	if ((execve(args[0], args, envp)) == -1)
+	{
+		return (-1);
+	}
+
+	return (0);
+
+}
+
+/*
+ * check_file - this checks if the command exist by checking each PATH entry
+ * @command: the entered command
+ */
+int check_file(char *command, char **envp)
+{
+	char *paths[MAX_PATH_COUNT];
 	char *path = strdup(_getenv(envp, "PATH"));
 	char *tok = NULL;
 	int i = 0, j = 0;
-	
-	/* check if the command begins with a / */
-	if (strchr(args[0], '/'))
+	int ret_val = 0;
+
+	if (!command)
+		return (-1);
+
+	/*check if the command is contains the path so we dont appens */
+	if (strchr(command, '/'))
 	{
-		if (execve(args[0], args, envp) == -1)
-		{
-			return (-1);
-		}
+		return (access(command, X_OK | F_OK));
 	}
 	else
 	{
@@ -134,24 +164,28 @@ int run_command(char *args[], char **envp)
 		/* Search for the binary in each directory path */
 		while (path[j])
 		{
-			char *full_path = malloc(strlen(paths[j]) + strlen(args[0]) + 2);
+			char *full_path = malloc(strlen(paths[j]) + strlen(command) + 2);
 			if (full_path == NULL)
 			{
-				perror(args[0]);
 				return (-1);
 			}
 			strcpy(full_path, paths[j]);
 			strcat(full_path, "/");
-			strcat(full_path, args[0]);
+			strcat(full_path, command);
 
-			if (execve(full_path, args, envp) == -1)
+			if ((access(full_path, X_OK | F_OK)) == -1)
 			{
+				/* this here prevented some leaks lol */
 				free(full_path);
+				/* 
+				 * by setting retval here if we dont find the file we 
+				 * can return the error code easily 
+				 * */
+				ret_val = -1; 
 				j++;
 			}
 		}
 	}
 
-
-	return (-1);
+	return (ret_val);
 }
