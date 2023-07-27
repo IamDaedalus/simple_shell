@@ -35,7 +35,7 @@ int init_shell(char **argv, char **envp)
 			continue;
 
 		extract_args(line, args, 30);
-		handle_builtins(line, envp);
+		handle_builtins(args, envp);
 		cmd_path = get_cmd_path(args, envp);
 		if (cmd_path == NULL)
 			perror(argv[0]);

@@ -25,6 +25,8 @@ int _strncmp(char *s1, char *s2, size_t n);
 int _strcmp(const char *s1, const char *s2);
 
 /* BUILTINS */
-void handle_builtins(char *line, char **envp);
+void handle_builtins(char **args, char **envp);
+int _atoi(char *str);
+int is_num(char c);
 
 #endif /* SHELL_H */
