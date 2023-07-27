@@ -67,7 +67,7 @@ char *_getenv(char **env, char *var)
 
 	while (env[i])
 	{
-		if (strncmp(env[i], var, 4) == 0)
+		if (_strncmp(env[i], var, 4) == 0)
 			return (env[i]);
 
 		i++;
@@ -77,7 +77,7 @@ char *_getenv(char **env, char *var)
 }
 
 /**
- * get_cnd_path - checks and returns the full path to the command
+ * get_cmd_path - checks and returns the full path to the command
  * if found
  * @args: the user's args from the shell
  * @envp: local environment variable
@@ -88,8 +88,8 @@ char *get_cmd_path(char *args[], char **envp)
 	int i = 0, j = 0;
 	char *path_entries[MAX_PATH_COUNT];
 	char *full_path = NULL;
-	char *tok = NULL;
-	char *path = _getenv(envp, "PATH");
+	char *tok = NULL, *final = NULL;
+	char *path = strdup(_getenv(envp, "PATH"));
 
 	if (strchr(args[0], '/'))
 		return (args[0]);
@@ -111,19 +111,22 @@ char *get_cmd_path(char *args[], char **envp)
 	/* iterate through each entry looking for the command */
 	for (j = 0; path_entries[j] != NULL; j++)
 	{
-		full_path = malloc(strlen(path_entries[j]) + strlen(args[0]) + 2);
+		full_path = malloc(_strlen(path_entries[j]) + _strlen(args[0]) + 2);
 		if (full_path == NULL)
 			return (NULL);
 
-		strcpy(full_path, path_entries[j]);
-		strcat(full_path, "/");
-		strcat(full_path, args[0]);
+		_strcpy(full_path, path_entries[j]);
+		_strcat(full_path, "/");
+		_strcat(full_path, args[0]);
 
 		if (access(full_path, F_OK) == 0)
-			return (full_path);
+		{
+			final = full_path;
+			break;
+		}
 
 		free(full_path);
 	}
 
-	return (NULL);
+	return (final);
 }

@@ -17,7 +17,7 @@
  */
 int init_shell(char **argv, char **envp)
 {
-	pid_t kid_proc;
+	pid_t child_proc;
 	int ret_val = 0;
 	char *line = NULL, *cmd_path = NULL;
 	size_t line_size = 0;
@@ -34,7 +34,8 @@ int init_shell(char **argv, char **envp)
 			break;
 		}
 
-		if (line[0] == '\n')
+
+		if (handle_empty(line) == 0)
 			continue;
 
 		extract_args(line, args, 30);
@@ -46,8 +47,8 @@ int init_shell(char **argv, char **envp)
 		else
 		{
 			args[0] = cmd_path;
-			kid_proc = fork();
-			if ((core_logic(kid_proc, args, argv, envp)) == -1)
+			child_proc = fork();
+			if ((core_logic(child_proc, args, argv, envp)) == -1)
 			{
 				/* break as soon as something fails in core_logic */
 				break;
@@ -119,73 +120,23 @@ int core_logic(pid_t child, char *args[], char **argv, char **envp)
  */
 int run_command(char *args[], char **envp)
 {
-	if ((execve(args[0], args, envp)) == -1)
-	{
-		return (-1);
-	}
-
-	return (0);
-
+	return (execve(args[0], args, envp));
 }
 
-/*
- * check_file - this checks if the command exist by checking each PATH entry
- * @command: the entered command
- */
-int check_file(char *command, char **envp)
+int handle_empty(char *line)
 {
-	char *paths[MAX_PATH_COUNT];
-	char *path = strdup(_getenv(envp, "PATH"));
-	char *tok = NULL;
-	int i = 0, j = 0;
-	int ret_val = 0;
+	int i = 0;
 
-	if (!command)
-		return (-1);
+	if (line[0] == '\n')
+		return (0);
 
-	/*check if the command is contains the path so we dont appens */
-	if (strchr(command, '/'))
+	while (line[i] != '\0')
 	{
-		return (access(command, X_OK | F_OK));
-	}
-	else
-	{
-		tok = strtok(path, "=");
-		while (tok)
-		{
-			tok = strtok(NULL, ":");
-			paths[i] = tok;
-			i++;
-		}
-
-		/* Null-terminate the paths array */
-		paths[i] = NULL;
-
-		/* Search for the binary in each directory path */
-		while (path[j])
-		{
-			char *full_path = malloc(strlen(paths[j]) + strlen(command) + 2);
-			if (full_path == NULL)
-			{
-				return (-1);
-			}
-			strcpy(full_path, paths[j]);
-			strcat(full_path, "/");
-			strcat(full_path, command);
-
-			if ((access(full_path, X_OK | F_OK)) == -1)
-			{
-				/* this here prevented some leaks lol */
-				free(full_path);
-				/* 
-				 * by setting retval here if we dont find the file we 
-				 * can return the error code easily 
-				 * */
-				ret_val = -1; 
-				j++;
-			}
-		}
+		if (line[i] != ' ')
+			return (1);
+		i++;
 	}
 
-	return (ret_val);
+	print("no empty lines found");
+	return (0);
 }
