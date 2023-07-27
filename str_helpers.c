@@ -70,6 +70,13 @@ char *_strcat(char *dest, char *src)
 	return (dest);
 }
 
+/**
+ * _strncmp - compares the forst n bytes of two strings
+ * @s1: the first string
+ * @s2: the second string
+ * @n: the number of bytes to compare
+ * Return: returns 0 for same
+ */
 int _strncmp(char *s1, char *s2, size_t n)
 {
 	size_t i = 0;
@@ -86,6 +93,26 @@ int _strncmp(char *s1, char *s2, size_t n)
 		else if (s1[i] > s2[i])
 			return (1);
 		else if (s1[i] < s2[i])
+			return (-1);
+	}
+
+	return (0);
+}
+
+/**
+ * strcmp - compares two str
+ * @s1: first str
+ * @s2: second str
+ * Return: returns the difference
+ */
+int _strcmp(const char *s1, const char *s2)
+{
+	int i = 0;
+	while (s1[i])
+	{
+		if (s1[i] == s2[i])
+			i++;
+		else
 			return (-1);
 	}
 

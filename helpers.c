@@ -56,6 +56,7 @@ void extract_args(char *line, char *args[], int max_args)
 /**
  * _getenv - extracts the PATH variable from envp
  * @env: the environment variables
+ * @var: the variable to check
  * Return: returns PATH or NULL if not found
  */
 char *_getenv(char **env, char *var)
@@ -86,8 +87,7 @@ char *_getenv(char **env, char *var)
 char *get_cmd_path(char *args[], char **envp)
 {
 	int i = 0, j = 0;
-	char *path_entries[MAX_PATH_COUNT];
-	char *full_path = NULL;
+	char *path_entries[MAX_PATH_COUNT], *full_path = NULL;
 	char *tok = NULL, *final = NULL;
 	char *path = strdup(_getenv(envp, "PATH"));
 
@@ -95,9 +95,7 @@ char *get_cmd_path(char *args[], char **envp)
 		return (args[0]);
 
 	if (path == NULL)
-	{
 		return (NULL);
-	}
 
 	tok = strtok(path, "=");
 	while (tok != NULL && i < MAX_PATH_COUNT)
@@ -124,7 +122,6 @@ char *get_cmd_path(char *args[], char **envp)
 			final = full_path;
 			break;
 		}
-
 		free(full_path);
 	}
 

@@ -1,7 +1,7 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#define PROMPT "#cisfun$ "
+#define PROMPT "$ "
 #define MAX_PATH_COUNT 64
 
 #include <unistd.h>
@@ -22,5 +22,9 @@ size_t _strlen(const char *str);
 char *_strcpy(char *dest, char *source);
 char *_strcat(char *dest, char *src);
 int _strncmp(char *s1, char *s2, size_t n);
+int _strcmp(const char *s1, const char *s2);
+
+/* BUILTINS */
+void handle_builtins(char *line, char **envp);
 
 #endif /* SHELL_H */

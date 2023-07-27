@@ -26,24 +26,19 @@ int init_shell(char **argv, char **envp)
 	while (1)
 	{
 		print(PROMPT);
-		fflush(stdout);
 
 		/* handle empty lines and ctrl d */
 		if ((getline(&line, &line_size, stdin)) == -1)
-		{
 			break;
-		}
-
 
 		if (handle_empty(line) == 0)
 			continue;
 
 		extract_args(line, args, 30);
+		handle_builtins(line, envp);
 		cmd_path = get_cmd_path(args, envp);
 		if (cmd_path == NULL)
-		{
 			perror(argv[0]);
-		}
 		else
 		{
 			args[0] = cmd_path;
@@ -123,6 +118,11 @@ int run_command(char *args[], char **envp)
 	return (execve(args[0], args, envp));
 }
 
+/**
+ * handle_empty - handles every empty input (almost)
+ * @line: the user's input
+ * Return: code for execution
+ */
 int handle_empty(char *line)
 {
 	int i = 0;
