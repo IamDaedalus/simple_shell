@@ -25,7 +25,7 @@ int init_shell(char **argv, char **envp)
 
 	while (1)
 	{
-		if (tty) /* this is the modification */
+		if (tty) /* this is the modification made */
 			print(PROMPT);
 
 		/* handle empty lines and ctrl d */
