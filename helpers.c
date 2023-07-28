@@ -99,7 +99,6 @@ char *get_cmd_path(char *args[], char **envp)
 
 	if (strchr(args[0], '/'))
 		return (args[0]);
-
 	if (path == NULL)
 		return (NULL);
 

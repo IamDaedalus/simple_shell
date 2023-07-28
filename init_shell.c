@@ -30,9 +30,7 @@ int init_shell(char **argv, char **envp)
 
 		/* handle empty lines and ctrl d */
 		if ((getline(&line, &line_size, stdin)) == -1)
-		{
 			break;
-		}
 
 		if (handle_empty(line) == 0)
 			continue;

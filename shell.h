@@ -28,6 +28,7 @@ char *_strcat(char *dest, char *src);
 int _strncmp(char *s1, char *s2, size_t n);
 int _strcmp(const char *s1, const char *s2);
 char *_strdup(const char *str);
+char* _strchr(const char* str, int ch);
 
 /* BUILTINS */
 void handle_builtins(char **args, char **envp);
