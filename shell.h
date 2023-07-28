@@ -16,6 +16,8 @@ char *_getenv(char **envp, char *var);
 int run_command(char *args[], char **envp);
 char *get_cmd_path(char *args[], char **envp);
 int handle_empty(char *line);
+void rm_line(char *buffer);
+void print_envvar(char **envp);
 
 /* STRING HELPERS */
 size_t _strlen(const char *str);
