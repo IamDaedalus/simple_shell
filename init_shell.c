@@ -46,6 +46,7 @@ int init_shell(char **argv, char **envp)
 		else
 		{
 			args[0] = _strdup(cmd_path);
+			free(cmd_path);
 			child_proc = fork();
 			if ((core_logic(child_proc, args, argv, envp)) == -1)
 				break;
