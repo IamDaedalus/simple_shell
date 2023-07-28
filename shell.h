@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+extern char **environ;
+
 void print(const char *msg);
 int _putchar(char c);
 void extract_args(char *line, char *args[], int max_args);
@@ -25,6 +27,7 @@ char *_strcpy(char *dest, char *source);
 char *_strcat(char *dest, char *src);
 int _strncmp(char *s1, char *s2, size_t n);
 int _strcmp(const char *s1, const char *s2);
+char *_strdup(const char *str);
 
 /* BUILTINS */
 void handle_builtins(char **args, char **envp);

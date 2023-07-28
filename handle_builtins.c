@@ -15,6 +15,7 @@ void handle_builtins(char **args, char **envp)
 		if (args[1] != NULL)
 			exit_code = _atoi(args[1]);
 
+		free(args[0]);
 		exit(exit_code);
 	}
 

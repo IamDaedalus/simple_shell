@@ -95,7 +95,7 @@ char *get_cmd_path(char *args[], char **envp)
 	int i = 0, j = 0;
 	char *path_entries[MAX_PATH_COUNT], *full_path = NULL;
 	char *tok = NULL, *final = NULL;
-	char *path = strdup(_getenv(envp, "PATH"));
+	char *path = _strdup(_getenv(envp, "PATH"));
 
 	if (strchr(args[0], '/'))
 		return (args[0]);
@@ -110,6 +110,7 @@ char *get_cmd_path(char *args[], char **envp)
 		i++;
 		tok = strtok(NULL, ":");
 	}
+	free(path);
 	path_entries[i] = NULL;
 
 	/* iterate through each entry looking for the command */

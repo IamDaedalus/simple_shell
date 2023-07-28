@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <stdlib.h>
 
 /**
  * print_envvar - function that print env
@@ -16,4 +17,25 @@ void print_envvar(char **envp)
 		write(STDOUT_FILENO, "\n", 1);
 		dex++;
 	}
+}
+
+char *_strdup(const char *str)
+{
+	char *result = NULL;
+	size_t len = 0;
+	int i = 0;
+
+	if (!str)
+		return (NULL);
+	len = _strlen(str);
+	result = malloc(sizeof(char) * len + 1);
+
+
+	while (str[i] != '\0')
+	{
+		result[i] = str[i];
+		i++;
+	}
+
+	return (result);
 }
