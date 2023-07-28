@@ -18,14 +18,15 @@
 int init_shell(char **argv, char **envp)
 {
 	pid_t child_proc;
-	int ret_val = 0;
 	char *line = NULL, *cmd_path = NULL;
 	size_t line_size = 0;
 	char *args[30];
+	int ret_val = 0, tty = isatty(STDIN_FILENO);
 
 	while (1)
 	{
-		print(PROMPT);
+		if (tty) /* this is the modification */
+			print(PROMPT);
 
 		/* handle empty lines and ctrl d */
 		if ((getline(&line, &line_size, stdin)) == -1)
