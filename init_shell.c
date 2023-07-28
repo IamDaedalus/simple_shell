@@ -31,7 +31,6 @@ int init_shell(char **argv, char **envp)
 		/* handle empty lines and ctrl d */
 		if ((getline(&line, &line_size, stdin)) == -1)
 		{
-			print("\n");
 			break;
 		}
 
@@ -48,11 +47,10 @@ int init_shell(char **argv, char **envp)
 			perror(argv[0]);
 		else
 		{
-			args[0] = cmd_path;
+			args[0] = _strdup(cmd_path);
 			child_proc = fork();
 			if ((core_logic(child_proc, args, argv, envp)) == -1)
 				break;
-			free(args[0]);
 		}
 		clear_residuals(&line, &line_size);
 	}
@@ -108,6 +106,7 @@ int core_logic(pid_t child, char *args[], char **argv, char **envp)
 		wait(&status);
 	}
 
+	free(args[0]);
 	return (ret_val);
 }
 
