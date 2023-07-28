@@ -8,7 +8,7 @@
  */
 void handle_builtins(char **args, char **envp)
 {
-	int i = 0, exit_code = 0;
+	int exit_code = 0;
 
 	if (_strcmp(args[0], "exit") == 0)
 	{
@@ -20,11 +20,7 @@ void handle_builtins(char **args, char **envp)
 
 	if (_strcmp(args[0], "env") == 0)
 	{
-		while (envp[i])
-		{
-			print(envp[i]);
-			i++;
-		}
+		print_envvar(envp);
 	}
 }
 

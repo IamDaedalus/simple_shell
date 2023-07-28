@@ -1,4 +1,4 @@
-#inlcude "shell.h"
+#include "shell.h"
 
 /**
  * rm_line - Delete fresh line added up
@@ -9,15 +9,15 @@
 
 void rm_line(char *buffer)
 {
-int dex;
-dex = 0;
-while (buffer[dex])
-{
-	if (buffer[i] == '\n')
+	int dex = 0;
+
+	while (buffer[dex])
 	{
-		buffer[dex] = 0.;
+		if (buffer[dex] == '\n')
+		{
+			buffer[dex] = 0;
+		}
+		dex++;
 	}
-	dex++;
-}
 }
 

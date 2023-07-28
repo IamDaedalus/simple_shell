@@ -11,6 +11,13 @@
 int main(int argc, char **argv, char *envp[])
 {
 	(void)argc;
-
+	/*
+	 * char *cmd = "    \n";
+	 * char *args[2] = { "      \n", NULL };
+	 * (void)argc;
+	 * (void)argv;
+	 * run_command(args, envp);
+	 * return 0;
+	*/
 	return (init_shell(argv, envp));
 }

@@ -40,6 +40,12 @@ void extract_args(char *line, char *args[], int max_args)
 	 */
 	token = strtok(line, " \t\n");
 
+	/* handle thee empty lines by returning \n */
+	if (token == NULL)
+	{
+		args[0] = "\n";
+		return;
+	}
 	while (token != NULL && i < max_args - 1)
 	{
 		args[i] = token;

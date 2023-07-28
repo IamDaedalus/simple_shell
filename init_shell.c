@@ -36,6 +36,9 @@ int init_shell(char **argv, char **envp)
 			continue;
 
 		extract_args(line, args, 30);
+		if (_strcmp(args[0], "\n") == 0)
+			continue;
+
 		handle_builtins(args, envp);
 		cmd_path = get_cmd_path(args, envp);
 		if (cmd_path == NULL)
@@ -45,12 +48,8 @@ int init_shell(char **argv, char **envp)
 			args[0] = cmd_path;
 			child_proc = fork();
 			if ((core_logic(child_proc, args, argv, envp)) == -1)
-			{
-				/* break as soon as something fails in core_logic */
 				break;
-			}
 		}
-
 		clear_residuals(&line, &line_size);
 	}
 	clear_residuals(&line, &line_size);
@@ -138,6 +137,5 @@ int handle_empty(char *line)
 		i++;
 	}
 
-	print("no empty lines found");
 	return (0);
 }
